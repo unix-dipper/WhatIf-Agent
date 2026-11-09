@@ -1,2 +1,2 @@
-# Local SVG-to-PNG rasterization for FFmpeg compatibility.
-CairoSVG>=2.7.1
+# Native-wheel SVG-to-PNG rasterization for FFmpeg compatibility on Windows.
+svg2png-py>=0.1.0
