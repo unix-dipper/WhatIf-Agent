@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 from whatif.images.base import ImageRequest
@@ -83,3 +84,37 @@ def test_svg_provider_uses_scene_semantics_and_scales_to_full_hd(tmp_path: Path)
         outputs.append(content)
     assert len(set(outputs)) == 3
     assert all("Phase 2 placeholder" not in content for content in outputs)
+
+
+
+def test_story_export_generates_real_svg_assets(tmp_path: Path):
+    from whatif.ai.generation_pipeline import StoryGenerationPipeline
+
+    pipeline = StoryGenerationPipeline(None, tmp_path)
+    plan = {
+        "title": "The Empty City",
+        "description": "A visual test episode.",
+        "characters": [],
+        "scenes": [{
+            "id": "scene_001",
+            "title": "Rain over the avenue",
+            "narration": "The avenue fell silent.",
+            "story_beat": "opening",
+            "visual_description": "An empty city street in heavy rain.",
+            "image_prompt": {
+                "main_subject": "Empty avenue",
+                "environment": "city street",
+                "composition": "Wide establishing shot",
+                "lighting": "Cold streetlights",
+                "color_palette": "Cold blue",
+                "art_style": "2D illustrated documentary",
+            },
+        }],
+    }
+    pipeline._export(tmp_path, plan, {"summary": "test"}, {"beats": []})
+    image = tmp_path / "images" / "scene_001.svg"
+    assert image.is_file()
+    assert "Phase 2 placeholder" not in image.read_text(encoding="utf-8")
+    episode = json.loads((tmp_path / "episode.json").read_text(encoding="utf-8"))
+    assert episode["metadata"]["placeholders"] is False
+    assert episode["metadata"]["image_provider"] == "svg"
