@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
+from typing import Any
 
 from .errors import ExternalToolError
 from .utils import run_command, stable_hash
@@ -22,62 +24,175 @@ def probe_duration(ffprobe: str, path: Path, logger) -> float:
         raise ExternalToolError(f"FFprobe returned no duration for {path}") from exc
 
 
+def probe_media(ffprobe: str, path: Path, logger) -> dict[str, Any]:
+    result = run_command([
+        ffprobe, "-v", "error", "-show_streams", "-show_format", "-of", "json", path
+    ], logger=logger)
+    try:
+        data = json.loads(result.stdout)
+    except json.JSONDecodeError as exc:
+        raise ExternalToolError(f"FFprobe returned invalid JSON for {path}") from exc
+    if not path.is_file() or path.stat().st_size == 0:
+        raise ExternalToolError(f"Media file is missing or empty: {path}")
+    return data
+
+
+def _frame_count(duration: float, fps: int) -> int:
+    return max(1, round(duration * fps))
+
+
+def _validate_streams(
+    ffprobe: str,
+    path: Path,
+    *,
+    width: int | None,
+    height: int | None,
+    fps: int | None,
+    expected_duration: float | None,
+    logger,
+) -> dict[str, Any]:
+    data = probe_media(ffprobe, path, logger)
+    streams = data.get("streams", [])
+    video = next((stream for stream in streams if stream.get("codec_type") == "video"), None)
+    audio = next((stream for stream in streams if stream.get("codec_type") == "audio"), None)
+    if video is None or audio is None:
+        raise ExternalToolError(f"Media must contain both video and audio streams: {path}")
+    if width is not None and (video.get("width") != width or video.get("height") != height):
+        raise ExternalToolError(
+            f"Unexpected resolution for {path}: {video.get('width')}x{video.get('height')}"
+        )
+    if fps is not None:
+        rate = video.get("r_frame_rate", "")
+        numerator, denominator = (int(value) for value in rate.split("/", 1))
+        actual_fps = numerator / denominator if denominator else 0
+        if abs(actual_fps - fps) > 0.01:
+            raise ExternalToolError(f"Unexpected frame rate for {path}: {rate}")
+    duration = float(data.get("format", {}).get("duration") or 0)
+    if expected_duration is not None and abs(duration - expected_duration) > max(0.15, 2 / (fps or 30)):
+        raise ExternalToolError(
+            f"Unexpected duration for {path}: {duration:.3f}s (expected {expected_duration:.3f}s)"
+        )
+    return {"duration": duration, "video": video, "audio": audio}
+
+
 def render_scene_clip(
-    ffmpeg: str, image: Path, narration: Path, output: Path, *,
+    ffmpeg: str, ffprobe: str, image: Path, narration: Path, output: Path, *,
     width: int, height: int, fps: int, duration: float, max_zoom: float,
-    threads: int, logger, force: bool,
+    threads: int, logger, force: bool, cache_key: str, motion_override: str | None = None,
 ) -> None:
-    if output.is_file() and output.stat().st_size > 0 and not force:
-        logger.info("Reusing scene clip: %s", output.name)
-        return
-    zoom_limit = max(1.0, max_zoom)
-    motion = motion_for_scene(output.stem)
+    sidecar = output.with_suffix(".json")
+    if output.is_file() and output.stat().st_size > 0 and sidecar.is_file() and not force:
+        try:
+            cached = json.loads(sidecar.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            cached = {}
+        if cached.get("cache_key") == cache_key:
+            try:
+                _validate_streams(
+                    ffprobe, output, width=width, height=height, fps=fps,
+                    expected_duration=duration, logger=logger,
+                )
+                logger.info("Reusing scene clip: %s", output.name)
+                return
+            except ExternalToolError as exc:
+                logger.warning("Cached scene clip is invalid; rebuilding %s: %s", output.name, exc)
+    output.unlink(missing_ok=True)
+    sidecar.unlink(missing_ok=True)
+    frames = _frame_count(duration, fps)
+    zoom_limit = max(1.0, min(max_zoom, 1.25))
+    motion = motion_override or motion_for_scene(output.stem)
+    source_width = max(width, round(width * zoom_limit))
+    source_height = max(height, round(height * zoom_limit))
     if motion == "zoom_out":
-        zoom_expr = f"zoom={zoom_limit}-({zoom_limit}-1)*on/{max(1, int(duration * fps))}"
+        zoom_expr = f"z='{zoom_limit}-({zoom_limit}-1)*on/{max(1, frames - 1)}'"
+        x_expr = "'(iw-iw/zoom)/2'"
+        y_expr = "'(ih-ih/zoom)/2'"
     elif motion == "pan_left":
-        zoom_expr = f"zoom={zoom_limit}:x='(iw-iw/zoom)*on/{max(1, int(duration * fps))}':y='(ih-oh)/2'"
+        zoom_expr = f"z='{zoom_limit}'"
+        x_expr = f"'(iw-iw/zoom)*(1-on/{max(1, frames - 1)})'"
+        y_expr = "'(ih-ih/zoom)/2'"
     elif motion == "pan_right":
-        zoom_expr = f"zoom={zoom_limit}:x='(iw-iw/zoom)*(1-on/{max(1, int(duration * fps))})':y='(ih-oh)/2'"
+        zoom_expr = f"z='{zoom_limit}'"
+        x_expr = f"'(iw-iw/zoom)*on/{max(1, frames - 1)}'"
+        y_expr = "'(ih-ih/zoom)/2'"
     else:
-        zoom_expr = f"zoom=1+({zoom_limit}-1)*on/{max(1, int(duration * fps))}"
+        zoom_expr = f"z='1+({zoom_limit}-1)*on/{max(1, frames - 1)}'"
+        x_expr = "'(iw-iw/zoom)/2'"
+        y_expr = "'(ih-ih/zoom)/2'"
     video_filter = (
-        f"scale={width}:{height}:force_original_aspect_ratio=increase,"
-        f"crop={width}:{height},setsar=1,{zoom_expr},"
-        f"scale={width}:{height}:force_original_aspect_ratio=increase,crop={width}:{height}"
+        f"scale={source_width}:{source_height}:force_original_aspect_ratio=increase,"
+        f"crop={source_width}:{source_height},"
+        f"zoompan={zoom_expr}:x={x_expr}:y={y_expr}:d={frames}:s={width}x{height}:fps={fps},"
+        "setsar=1"
     )
     run_command([
         ffmpeg, "-y", "-loop", "1", "-i", image, "-i", narration,
-        "-t", f"{duration:.3f}", "-r", str(fps), "-vf", video_filter,
+        "-filter_complex", f"[0:v]{video_filter}[v]",
+        "-map", "[v]", "-map", "1:a:0", "-t", f"{duration:.3f}", "-r", str(fps),
         "-c:v", "libx264", "-preset", "veryfast", "-crf", "23", "-pix_fmt", "yuv420p",
-        "-c:a", "aac", "-ar", "48000", "-ac", "2", "-shortest", "-threads", str(threads), output
+        "-c:a", "aac", "-ar", "48000", "-ac", "2", "-threads", str(threads), output
     ], logger=logger)
-    if not output.is_file() or output.stat().st_size == 0:
-        raise ExternalToolError(f"FFmpeg did not create scene clip: {output}")
+    _validate_streams(
+        ffprobe, output, width=width, height=height, fps=fps,
+        expected_duration=duration, logger=logger,
+    )
+    sidecar.write_text(json.dumps({"cache_key": cache_key, "motion": motion}, indent=2), encoding="utf-8")
 
 
 def assemble_video(
-    ffmpeg: str, clips: list[Path], output: Path, *, music: Path | None, music_volume: float,
-    fade_seconds: float, threads: int, logger, force: bool,
+    ffmpeg: str, ffprobe: str, clips: list[Path], output: Path, *, music: Path | None,
+    music_volume: float, fade_seconds: float, threads: int, logger, force: bool,
+    duration: float, cache_key: str, width: int, height: int, fps: int,
 ) -> None:
-    if output.is_file() and output.stat().st_size > 0 and not force:
-        logger.info("Reusing final video: %s", output)
-        return
+    sidecar = output.with_suffix(".json")
+    if output.is_file() and output.stat().st_size > 0 and sidecar.is_file() and not force:
+        try:
+            cached = json.loads(sidecar.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            cached = {}
+        if cached.get("cache_key") == cache_key:
+            try:
+                _validate_streams(
+                    ffprobe, output, width=width, height=height, fps=fps,
+                    expected_duration=duration, logger=logger,
+                )
+                logger.info("Reusing final video: %s", output)
+                return
+            except ExternalToolError as exc:
+                logger.warning("Cached final video is invalid; rebuilding: %s", exc)
+    output.unlink(missing_ok=True)
+    sidecar.unlink(missing_ok=True)
     concat_file = output.with_suffix(".concat.txt")
-    concat_file.write_text("".join(f"file '{clip.as_posix().replace(chr(39), chr(39) + chr(39))}'\n" for clip in clips), encoding="utf-8")
+    concat_file.write_text(
+        "".join(f"file '{clip.as_posix().replace(chr(39), chr(39) + chr(39))}'\n" for clip in clips),
+        encoding="utf-8",
+    )
     try:
         args = [ffmpeg, "-y", "-f", "concat", "-safe", "0", "-i", concat_file]
         if music:
-            args += ["-stream_loop", "-1", "-i", music]
+            fade_start = max(0.0, duration - max(0.0, fade_seconds))
             audio_filter = (
-                f"[1:a]volume={music_volume},afade=t=in:st=0:d={fade_seconds},"
-                f"afade=t=out:st=99999:d={fade_seconds}[music];[0:a][music]amix=inputs=2:duration=first:dropout_transition=2[aout]"
+                f"[1:a]volume={music_volume},"
+                f"afade=t=in:st=0:d={max(0.01, fade_seconds)},"
+                f"afade=t=out:st={fade_start:.3f}:d={max(0.01, fade_seconds)},"
+                f"atrim=duration={duration:.3f}[music];"
+                "[0:a][music]amix=inputs=2:duration=first:dropout_transition=2,"
+                "alimiter=limit=0.95[aout]"
             )
-            args += ["-filter_complex", audio_filter, "-map", "0:v:0", "-map", "[aout]"]
+            args += ["-stream_loop", "-1", "-i", music, "-filter_complex", audio_filter,
+                     "-map", "0:v:0", "-map", "[aout]"]
         else:
             args += ["-map", "0:v:0", "-map", "0:a:0"]
-        args += ["-c:v", "copy", "-c:a", "aac", "-ar", "48000", "-ac", "2", "-movflags", "+faststart", "-threads", str(threads), output]
+        args += [
+            "-t", f"{duration:.3f}", "-c:v", "libx264", "-preset", "veryfast", "-crf", "23",
+            "-pix_fmt", "yuv420p", "-c:a", "aac", "-ar", "48000", "-ac", "2",
+            "-movflags", "+faststart", "-threads", str(threads), output,
+        ]
         run_command(args, logger=logger)
     finally:
         concat_file.unlink(missing_ok=True)
-    if not output.is_file() or output.stat().st_size == 0:
-        raise ExternalToolError(f"FFmpeg did not create final video: {output}")
+    _validate_streams(
+        ffprobe, output, width=width, height=height, fps=fps,
+        expected_duration=duration, logger=logger,
+    )
+    sidecar.write_text(json.dumps({"cache_key": cache_key}, indent=2), encoding="utf-8")

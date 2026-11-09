@@ -40,7 +40,7 @@ The engine renders 1920x1080 at 30 FPS by default. For a faster local test, temp
 
 Paths are relative to the JSON file and are prevented from escaping its directory. Required fields are `title`, `description`, `language`, `resolution`, and a non-empty `scenes` array. Each scene requires a unique `id`, an existing `image`, and non-empty `narration`.
 
-Optional scene fields include `narration_audio`, `image_prompt`, `transition`, `duration_hint`, and `sound_effects`. `duration_hint` is retained for compatibility but actual WAV duration controls timing. Music can be added with a top-level `"music": "music/track.mp3"`; it loops, is reduced to the configured volume, and is mixed under narration. Do not add copyrighted media without permission.
+Optional scene fields include `narration_audio`, `image_prompt`, `transition`, `duration_hint`, and `sound_effects`. In Phase 1, `transition`, `duration_hint`, and `sound_effects` are accepted for forward-compatible JSON but are deliberately deferred: transitions are not yet inserted, duration hints never override measured WAV duration, and sound effects are not mixed. Music can be added with a top-level `"music": "music/track.mp3"`; it loops, fades in and out over the actual final duration, is reduced to the configured volume, and is mixed under narration. Do not add copyrighted media without permission.
 
 ## Piper setup
 
@@ -65,8 +65,8 @@ Phase 2 can write the same JSON directly from a local story generator. Phase 3 c
 ## Known limitations
 
 - No automatic image generation, story generation, word-level subtitle alignment, GUI, or cloud integration.
-- Scene pause is represented in subtitle timing metadata but clips are concatenated without inserted silent pause frames; narration itself is never cut off.
-- Music fade-out uses a conservative long-tail filter because final duration is established by the concatenated clips.
+- Scene transitions and sound effects are deferred while their input fields remain schema-compatible.
+- Scene pauses are currently disabled; subtitle and video timelines are based on measured narration durations with no hidden gap.
 - Windows FFmpeg/Piper installation is environment-specific and must be verified locally.
 
 ## Testing
