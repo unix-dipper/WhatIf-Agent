@@ -7,6 +7,8 @@ from pathlib import Path
 from typing import Any
 
 from ..errors import ValidationError
+from ..images.base import ImageRequest
+from ..images.providers import available_providers
 from ..utils import atomic_write_json, stable_hash
 from .ollama_client import OllamaClient, OllamaError
 from .prompts import SYSTEM, analysis_prompt, outline_prompt, scene_prompt
@@ -105,12 +107,21 @@ class StoryGenerationPipeline:
     def _export(self, episode_dir: Path, plan: dict[str, Any], analysis: dict[str, Any], outline: dict[str, Any]) -> None:
         images_dir = episode_dir / "images"
         images_dir.mkdir(exist_ok=True)
+        provider = available_providers(width=1920, height=1080)["svg"]
+        characters = plan.get("characters", [])
         phase1_scenes = []
         script_lines = [plan["title"], "", plan.get("description", "")]
         for index, scene in enumerate(plan["scenes"], 1):
             scene_id = scene["id"]
             image_name = f"{scene_id}.svg"
-            self._write_placeholder(images_dir / image_name, scene.get("title", scene_id), scene.get("mood", "atmospheric"))
+            request = ImageRequest(
+                scene_id=scene_id,
+                scene=scene,
+                characters=characters,
+                width=1920,
+                height=1080,
+            )
+            provider.generate_image(request, images_dir / image_name)
             phase1_scenes.append({
                 "id": scene_id,
                 "image": f"images/{image_name}",
@@ -135,7 +146,8 @@ class StoryGenerationPipeline:
                 "outline": outline,
                 "characters": plan.get("characters", []),
                 "planning_file": "planning.json",
-                "placeholders": True,
+                "placeholders": False,
+                "image_provider": "svg",
             },
         }
         atomic_write_json(episode_dir / "episode.json", episode)
@@ -143,15 +155,3 @@ class StoryGenerationPipeline:
         atomic_write_json(episode_dir / "outline.json", outline)
         atomic_write_json(episode_dir / "analysis.json", analysis)
         (episode_dir / "script.txt").write_text("\n".join(script_lines) + "\n", encoding="utf-8")
-
-    @staticmethod
-    def _write_placeholder(path: Path, title: str, mood: str) -> None:
-        import html
-        text = html.escape(title[:80])
-        mood_text = html.escape(mood[:40])
-        svg = f"""<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080">
-<defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#13243a"/><stop offset="1" stop-color="#6b3048"/></linearGradient></defs>
-<rect width="1920" height="1080" fill="url(#bg)"/><rect x="90" y="730" width="1740" height="230" rx="24" fill="#000" opacity=".42"/>
-<text x="130" y="840" fill="#fff" font-family="sans-serif" font-size="68">{text}</text>
-<text x="130" y="910" fill="#ffd58a" font-family="sans-serif" font-size="34">Phase 2 placeholder • {mood_text}</text></svg>"""
-        path.write_text(svg, encoding="utf-8")

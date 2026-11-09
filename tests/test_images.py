@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 from whatif.images.base import ImageRequest
@@ -31,3 +32,89 @@ def test_svg_provider_reuses_cache(tmp_path: Path):
     first = output.stat().st_mtime_ns
     provider.generate_image(request, output)
     assert output.stat().st_mtime_ns == first
+
+
+
+def test_svg_provider_uses_scene_semantics_and_scales_to_full_hd(tmp_path: Path):
+    provider = SvgIllustrationProvider(width=1920, height=1080)
+    scenes = [
+        {
+            "id": "scene_001",
+            "title": "Rain over the abandoned avenue",
+            "visual_description": "A deserted city street at night, rain falling around abandoned cars.",
+            "environment": "street",
+            "mood": "tense",
+            "image_prompt": {
+                "main_subject": "An empty avenue",
+                "environment": "urban street",
+                "foreground": "abandoned cars",
+                "background": "distant skyline",
+                "color_palette": "cold blue",
+            },
+        },
+        {
+            "id": "scene_002",
+            "title": "The last room",
+            "visual_description": "A survivor waits beside a large apartment window.",
+            "environment": "room",
+            "mood": "uneasy",
+            "characters": ["observer"],
+        },
+        {
+            "id": "scene_003",
+            "title": "Into the forest",
+            "visual_description": "A lone figure crosses a dense forest beneath a cloudy sky.",
+            "environment": "forest",
+            "mood": "reflective",
+            "characters": ["observer"],
+        },
+    ]
+    outputs = []
+    for scene in scenes:
+        request = ImageRequest(
+            scene["id"], scene,
+            [{"id": "observer", "description": "dark coat and copper scarf"}],
+            1920, 1080,
+        )
+        output = provider.generate_image(request, tmp_path / f"{scene['id']}.svg")
+        assert validate_image(output, 1920, 1080).valid
+        content = output.read_text(encoding="utf-8")
+        assert 'viewBox="0 0 1920 1080"' in content
+        assert "url(#vignette)" in content
+        outputs.append(content)
+    assert len(set(outputs)) == 3
+    assert all("Phase 2 placeholder" not in content for content in outputs)
+
+
+
+def test_story_export_generates_real_svg_assets(tmp_path: Path):
+    from whatif.ai.generation_pipeline import StoryGenerationPipeline
+
+    pipeline = StoryGenerationPipeline(None, tmp_path)
+    plan = {
+        "title": "The Empty City",
+        "description": "A visual test episode.",
+        "characters": [],
+        "scenes": [{
+            "id": "scene_001",
+            "title": "Rain over the avenue",
+            "narration": "The avenue fell silent.",
+            "story_beat": "opening",
+            "visual_description": "An empty city street in heavy rain.",
+            "image_prompt": {
+                "main_subject": "Empty avenue",
+                "environment": "city street",
+                "composition": "Wide establishing shot",
+                "lighting": "Cold streetlights",
+                "color_palette": "Cold blue",
+                "art_style": "2D illustrated documentary",
+            },
+        }],
+    }
+    pipeline._export(tmp_path, plan, {"summary": "test"}, {"beats": []})
+    image = tmp_path / "images" / "scene_001.svg"
+    assert image.is_file()
+    assert "Phase 2 placeholder" not in image.read_text(encoding="utf-8")
+    episode = json.loads((tmp_path / "episode.json").read_text(encoding="utf-8"))
+    assert episode["metadata"]["placeholders"] is False
+    assert episode["metadata"]["image_provider"] == "svg"

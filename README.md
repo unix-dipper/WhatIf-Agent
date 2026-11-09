@@ -1,8 +1,8 @@
 # WhatIf Agent
 
-WhatIf Agent is a local-first production engine. Phase 1 consumes an episode JSON file, scene images, and either prerecorded WAV narration or a local Piper voice model, then creates scene MP4 clips, an SRT subtitle file, a manifest, and a final H.264/AAC MP4. Phase 2 adds an optional local Ollama storytelling brain that creates reviewable planning data and a directly Phase 1-compatible episode JSON.
+WhatIf Agent is a local-first production engine. Phase 1 consumes an episode JSON file, scene images, and either prerecorded WAV narration or a local Piper voice model, then creates scene MP4 clips, an SRT subtitle file, a manifest, and a final H.264/AAC MP4. Phase 2 adds an optional local Ollama storytelling brain that creates reviewable planning data, invokes the local SVG illustration provider, and exports directly Phase 1-compatible episode JSON.
 
-The sample uses original SVG placeholder graphics and generated tone WAVs. These are test assets, not AI-generated cinematic media. Replace them with your own licensed images and narration before publishing.
+The checked-in Phase 1 sample uses simple SVG test graphics and prerecorded audio. Autonomous production uses the layered scene-aware SVG illustration provider; these are procedural illustrations, not diffusion-generated art.
 
 ## Requirements
 
@@ -52,10 +52,10 @@ Set `ollama_url`, `ai_model`, `ai_timeout_seconds`, `ai_temperature`, `ai_max_to
 Generated episodes are stored below `episode/generated/<topic-slug>/`:
 
 - `planning.json`: complete Phase 2 plan with scene prompts and continuity data.
-- `episode.json`: Phase 1-compatible input with original SVG placeholders.
+- `episode.json`: Phase 1-compatible input with generated SVG illustrations.
 - `script.txt`: human-readable narration.
 - `analysis.json`, `outline.json`, `characters.json`: reviewable planning artifacts.
-- `images/`: clearly labeled placeholders to make the episode immediately renderable; replace them with Phase 3 assets later.
+- `images/`: deterministic scene-aware SVG illustrations generated locally from the scene prompt and character metadata.
 
 Review either format before rendering:
 
@@ -67,19 +67,19 @@ python main.py --episode episode\generated\<topic-slug>\episode.json
 
 The Phase 1 and Phase 2 handoff is direct: Phase 2 writes `episode.json` using the
 same required `title`, `description`, `language`, `resolution`, `scenes`, `id`,
-`image`, and `narration` fields that Phase 1 validates. Replace the generated
-placeholder images with Phase 3 images, configure Piper for narration (or add
+`image`, and `narration` fields that Phase 1 validates. Its image paths point to
+the generated SVG illustrations. Configure Piper for narration (or add
 `narration_audio` files), then run the final command above. No JSON copying or
 manual narration transfer is required.
 
-Phase 2 does not perform web research, image generation, Piper narration, or automatic model downloads. It distinguishes fact/extrapolation/speculation fields in planning data, but offline model knowledge is not a substitute for verified research.
+Phase 2 does not perform web research, diffusion image generation, Piper narration, or automatic model downloads. It does create procedural SVG illustrations through the same provider interface used by autonomous production. It distinguishes fact/extrapolation/speculation fields in planning data, but offline model knowledge is not a substitute for verified research.
 
 ## Phase 3 and Phase 4: local illustrations and autonomous production
 
-The tested image provider is `svg`. It creates actual layered 2D illustrated scenes
-with graphic-novel outlines, buildings, streets, windows, furniture, lighting,
-atmospheric gradients, silhouettes, and scene-aware palettes. It is not a blank
-background or renamed placeholder. It requires no model download and runs on CPU.
+The available image provider is `svg`. It creates layered 2D illustrated scenes
+with graphic-novel outlines, urban architecture, interiors, landscapes, vehicles,
+windows, furniture, atmospheric lighting, silhouettes, and scene-aware palettes.
+It is not a blank background or renamed placeholder. The renderer uses a resolution-aware SVG viewBox and deterministic per-scene composition. It requires no model download and runs on CPU.
 
 Run the complete local demo, which uses five varied scenes, 720p output, and clearly
 reported synthetic prerecorded test audio so Piper is not required:
@@ -132,15 +132,15 @@ Set `voice_model` to the model path, `voice_config` to its companion JSON path, 
 
 ## Architecture and roadmap
 
-`episode.py` validates the future-compatible JSON contract. `tts.py` isolates Piper. `video.py` creates deterministic restrained motion and assembles clips. `subtitles.py` creates SRT cues. `pipeline.py` coordinates sequential, resumable work and writes a manifest. `diagnostics.py` makes missing local tools explicit. `whatif/ai/ollama_client.py` talks only to the local Ollama API; `generation_pipeline.py` performs staged analysis, outline, scene planning, validation, placeholder export, and resume.
+`episode.py` validates the future-compatible JSON contract. `tts.py` isolates Piper. `video.py` creates deterministic restrained motion and assembles clips. `subtitles.py` creates SRT cues. `pipeline.py` coordinates sequential, resumable work and writes a manifest. `diagnostics.py` makes missing local tools explicit. `whatif/ai/ollama_client.py` talks only to the local Ollama API; `generation_pipeline.py` performs staged analysis, outline, scene planning, validation, SVG illustration export, and resume.
 
-Phase 2 can write the same JSON directly from a local story generator. Phase 3 can place generated images at the referenced paths; the production engine does not need to know how they were made. Future providers can implement the small narration boundary represented by `PiperTTS`.
+Phase 2 writes the Phase 1-compatible JSON and generates scene illustrations through the provider interface. Future diffusion providers can implement the same image-provider boundary without changing the video renderer. Future narration providers can implement the small narration boundary represented by `PiperTTS`.
 
 ## Known limitations
 
-- No automatic image generation, word-level subtitle alignment, GUI, or cloud integration.
+- No diffusion-based image generation, word-level subtitle alignment, GUI, or cloud integration.
 - Phase 2 story generation requires a separately installed, locally running Ollama service and model; no real Ollama generation was run in environments without that service.
-- Phase 2-only exports use placeholders; Phase 4 demo production replaces them with SVG-generated illustrations.
+- SVG output is procedural and deterministic; it cannot yet match the nuance of a trained diffusion illustration model.
 - SVG illustrations are a deterministic local fallback, not diffusion-generated images.
 - Diffusion/OpenVINO image generation is optional future work and was not claimed as tested in this environment.
 - Scene transitions and sound effects are deferred while their input fields remain schema-compatible.
