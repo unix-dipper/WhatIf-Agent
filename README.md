@@ -159,4 +159,4 @@ The unit tests cover JSON validation, path safety, missing images, configuration
 
 ### SVG rendering compatibility
 
-The renderer converts generated SVG illustrations to cached PNG files before passing them to FFmpeg. This avoids relying on an FFmpeg build with optional SVG decoding support. CairoSVG is installed automatically with `requirements.txt`.
+The renderer converts generated SVG illustrations to cached PNG files before passing them to FFmpeg. This avoids relying on an FFmpeg build with optional SVG decoding support. `svg2png-py` (Rust-based resvg bindings with Windows wheels) is installed automatically with `requirements.txt`.
