@@ -93,18 +93,17 @@ def _rasterize_svg_for_ffmpeg(image: Path, *, width: int, height: int, logger) -
     }:
         return png
     try:
-        import cairosvg
+        import svg2png_py
     except ImportError as exc:
         raise ExternalToolError(
             "SVG scenes need rasterization before FFmpeg. Install the project dependencies "
-            "with 'python -m pip install -r requirements-dev.txt' (includes CairoSVG), then retry."
+            "with 'python -m pip install -r requirements-dev.txt' (includes resvg), then retry."
         ) from exc
     temporary = png.with_name(png.stem + ".tmp.png")
     try:
-        cairosvg.svg2png(
-            url=str(image), write_to=str(temporary),
-            output_width=width, output_height=height,
-        )
+        font_db = svg2png_py.FontDatabase.system()
+        rendered_png = svg2png_py.svg_to_png(image.read_text(encoding="utf-8"), font_db)
+        temporary.write_bytes(rendered_png)
         if not temporary.is_file() or temporary.stat().st_size == 0:
             raise ExternalToolError(f"SVG rasterizer produced no PNG for {image}")
         temporary.replace(png)
