@@ -166,15 +166,15 @@ def render_scene_clip(
     video_filter = (
         f"scale={source_width}:{source_height}:force_original_aspect_ratio=increase,"
         f"crop={source_width}:{source_height},"
-        f"zoompan={zoom_expr}:x={x_expr}:y={y_expr}:d={frames}:s={width}x{height}:fps={fps},"
+        f"zoompan={zoom_expr}:x={x_expr}:y={y_expr}:d=1:s={width}x{height}:fps={fps},"
         "setsar=1"
     )
     ffmpeg_image = _rasterize_svg_for_ffmpeg(image, width=width, height=height, logger=logger)
     run_command([
-        ffmpeg, "-y", "-loop", "1", "-i", ffmpeg_image, "-i", narration,
+        ffmpeg, "-y", "-loop", "1", "-framerate", str(fps), "-i", ffmpeg_image, "-i", narration,
         "-filter_complex", f"[0:v]{video_filter}[v]",
         "-map", "[v]", "-map", "1:a:0", "-t", f"{duration:.3f}", "-r", str(fps),
-        "-c:v", "libx264", "-preset", "veryfast", "-crf", "23", "-pix_fmt", "yuv420p",
+        "-c:v", "libx264", "-preset", "veryfast", "-crf", "18", "-pix_fmt", "yuv420p", "-fps_mode", "cfr",
         "-c:a", "aac", "-ar", "48000", "-ac", "2", "-threads", str(threads), output
     ], logger=logger)
     _validate_streams(
@@ -229,7 +229,7 @@ def assemble_video(
         else:
             args += ["-map", "0:v:0", "-map", "0:a:0"]
         args += [
-            "-t", f"{duration:.3f}", "-c:v", "libx264", "-preset", "veryfast", "-crf", "23",
+            "-t", f"{duration:.3f}", "-c:v", "libx264", "-preset", "veryfast", "-crf", "18", "-fps_mode", "cfr",
             "-pix_fmt", "yuv420p", "-c:a", "aac", "-ar", "48000", "-ac", "2",
             "-movflags", "+faststart", "-threads", str(threads), output,
         ]
