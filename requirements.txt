@@ -1,2 +1,2 @@
 # Native-wheel SVG-to-PNG rasterization for FFmpeg compatibility on Windows.
-svg2png-py>=0.1.0
+svg2png-py>=1.1.0
