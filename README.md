@@ -65,6 +65,13 @@ python main.py --review episode\generated\<topic-slug>\episode.json
 python main.py --episode episode\generated\<topic-slug>\episode.json
 ```
 
+The Phase 1 and Phase 2 handoff is direct: Phase 2 writes `episode.json` using the
+same required `title`, `description`, `language`, `resolution`, `scenes`, `id`,
+`image`, and `narration` fields that Phase 1 validates. Replace the generated
+placeholder images with Phase 3 images, configure Piper for narration (or add
+`narration_audio` files), then run the final command above. No JSON copying or
+manual narration transfer is required.
+
 Phase 2 does not perform web research, image generation, Piper narration, or automatic model downloads. It distinguishes fact/extrapolation/speculation fields in planning data, but offline model knowledge is not a substitute for verified research.
 
 ## Episode format
