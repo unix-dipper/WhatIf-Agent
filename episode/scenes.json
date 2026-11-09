@@ -1,0 +1,30 @@
+{
+  "title": "What If Humans Could See 10 Seconds Into the Future?",
+  "description": "A short production-engine test episode using original placeholder graphics and prerecorded narration.",
+  "language": "en",
+  "resolution": "1080p",
+  "metadata": {
+    "placeholder_assets": true,
+    "subtitle_sync": "estimated_by_scene_audio_duration"
+  },
+  "scenes": [
+    {
+      "id": "scene_001",
+      "image": "images/scene_001.svg",
+      "narration_audio": "audio/scene_001.wav",
+      "narration": "Imagine waking tomorrow with a strange new sense: ten seconds of the future, arriving before every decision."
+    },
+    {
+      "id": "scene_002",
+      "image": "images/scene_002.svg",
+      "narration_audio": "audio/scene_002.wav",
+      "narration": "At first, the gift would feel like a miracle. Traffic accidents could be avoided, dropped glasses caught, and every conversation anticipated."
+    },
+    {
+      "id": "scene_003",
+      "image": "images/scene_003.svg",
+      "narration_audio": "audio/scene_003.wav",
+      "narration": "But ten seconds is enough to change a life. When everyone sees the same future, the real question becomes who acts first."
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "ffmpeg": "ffmpeg",
+  "ffprobe": "ffprobe",
+  "piper": "piper",
+  "voice_model": "",
+  "voice_config": "",
+  "resolution": "1920x1080",
+  "fps": 30,
+  "audio_sample_rate": 48000,
+  "threads": 2,
+  "music_volume": 0.12,
+  "music_fade_seconds": 2.0,
+  "scene_pause_seconds": 0.25,
+  "max_zoom": 1.08,
+  "transition_seconds": 0.35,
+  "subtitle_max_chars": 84,
+  "output_dir": "episode/output",
+  "work_dir": "episode"
+}
