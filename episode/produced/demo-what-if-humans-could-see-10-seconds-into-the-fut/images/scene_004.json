@@ -1,11 +1,11 @@
 {
-  "cache_key": "952ec65821b54fb86d8fdf82abf9979e4b44a38af3de7b23a1d05f3f14144df2",
+  "cache_key": "1519bf3b7b2b69ea262224b5199f4d91be01e325ae312d573576c79e53d69314",
   "provider": {
     "name": "svg",
-    "description": "Local layered 2D graphic-novel illustration renderer",
+    "description": "Offline layered graphic-novel illustration renderer",
     "model": null,
     "available": true,
-    "generated_kind": "svg-generated illustration"
+    "generated_kind": "procedural 2D illustrated scene"
   },
-  "source_sha256": "49021bc0051eac2c6606cfc8715478bb003fa89d31f76e253403e3a7d85160fb"
+  "source_sha256": "8401017d712af91e402cc7a9ca963bd75c1e4f034f9c0102222a8563c42c93e9"
 }
