@@ -67,8 +67,8 @@ python main.py --episode episode\generated\<topic-slug>\episode.json
 
 The Phase 1 and Phase 2 handoff is direct: Phase 2 writes `episode.json` using the
 same required `title`, `description`, `language`, `resolution`, `scenes`, `id`,
-`image`, and `narration` fields that Phase 1 validates. Replace the generated
-placeholder images with Phase 3 images, configure Piper for narration (or add
+`image`, and `narration` fields that Phase 1 validates. Its image paths point to
+the generated SVG illustrations. Configure Piper for narration (or add
 `narration_audio` files), then run the final command above. No JSON copying or
 manual narration transfer is required.
 
@@ -134,11 +134,11 @@ Set `voice_model` to the model path, `voice_config` to its companion JSON path, 
 
 `episode.py` validates the future-compatible JSON contract. `tts.py` isolates Piper. `video.py` creates deterministic restrained motion and assembles clips. `subtitles.py` creates SRT cues. `pipeline.py` coordinates sequential, resumable work and writes a manifest. `diagnostics.py` makes missing local tools explicit. `whatif/ai/ollama_client.py` talks only to the local Ollama API; `generation_pipeline.py` performs staged analysis, outline, scene planning, validation, SVG illustration export, and resume.
 
-Phase 2 can write the same JSON directly from a local story generator. Phase 3 can place generated images at the referenced paths; the production engine does not need to know how they were made. Future providers can implement the small narration boundary represented by `PiperTTS`.
+Phase 2 writes the Phase 1-compatible JSON and generates scene illustrations through the provider interface. Future diffusion providers can implement the same image-provider boundary without changing the video renderer. Future narration providers can implement the small narration boundary represented by `PiperTTS`.
 
 ## Known limitations
 
-- No automatic image generation, word-level subtitle alignment, GUI, or cloud integration.
+- No diffusion-based image generation, word-level subtitle alignment, GUI, or cloud integration.
 - Phase 2 story generation requires a separately installed, locally running Ollama service and model; no real Ollama generation was run in environments without that service.
 - SVG output is procedural and deterministic; it cannot yet match the nuance of a trained diffusion illustration model.
 - SVG illustrations are a deterministic local fallback, not diffusion-generated images.
