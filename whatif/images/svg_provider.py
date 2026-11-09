@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import hashlib
-import html
 import json
 import random
 from dataclasses import asdict
@@ -271,7 +270,6 @@ class SvgIllustrationProvider:
             elif any(t in description for t in ("white", "light")):
                 coat = "#a8a49a"
             scarf = "#b96c4e" if any(t in description for t in ("scarf", "copper")) else p[3]
-            top = y-h*.23*scale
             rendered.append(
                 f'<g transform="translate({x:.1f} {y:.1f}) scale({scale:.2f})">'
                 f'<ellipse cx="0" cy="{h*.012:.1f}" rx="{w*.04:.1f}" ry="{h*.012:.1f}" fill="#080c14" opacity=".45"/>'
