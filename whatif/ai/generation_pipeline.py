@@ -146,7 +146,8 @@ class StoryGenerationPipeline:
                 "outline": outline,
                 "characters": plan.get("characters", []),
                 "planning_file": "planning.json",
-                "placeholders": False,\n                "image_provider": "svg",
+                "placeholders": False,
+                "image_provider": "svg",
             },
         }
         atomic_write_json(episode_dir / "episode.json", episode)
@@ -154,15 +155,3 @@ class StoryGenerationPipeline:
         atomic_write_json(episode_dir / "outline.json", outline)
         atomic_write_json(episode_dir / "analysis.json", analysis)
         (episode_dir / "script.txt").write_text("\n".join(script_lines) + "\n", encoding="utf-8")
-
-    @staticmethod
-    def _write_placeholder(path: Path, title: str, mood: str) -> None:
-        import html
-        text = html.escape(title[:80])
-        mood_text = html.escape(mood[:40])
-        svg = f"""<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080">
-<defs><linearGradient id="bg" x2="1" y2="1"><stop stop-color="#13243a"/><stop offset="1" stop-color="#6b3048"/></linearGradient></defs>
-<rect width="1920" height="1080" fill="url(#bg)"/><rect x="90" y="730" width="1740" height="230" rx="24" fill="#000" opacity=".42"/>
-<text x="130" y="840" fill="#fff" font-family="sans-serif" font-size="68">{text}</text>
-<text x="130" y="910" fill="#ffd58a" font-family="sans-serif" font-size="34">Phase 2 placeholder • {mood_text}</text></svg>"""
-        path.write_text(svg, encoding="utf-8")
