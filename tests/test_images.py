@@ -31,3 +31,55 @@ def test_svg_provider_reuses_cache(tmp_path: Path):
     first = output.stat().st_mtime_ns
     provider.generate_image(request, output)
     assert output.stat().st_mtime_ns == first
+
+
+
+def test_svg_provider_uses_scene_semantics_and_scales_to_full_hd(tmp_path: Path):
+    provider = SvgIllustrationProvider(width=1920, height=1080)
+    scenes = [
+        {
+            "id": "scene_001",
+            "title": "Rain over the abandoned avenue",
+            "visual_description": "A deserted city street at night, rain falling around abandoned cars.",
+            "environment": "street",
+            "mood": "tense",
+            "image_prompt": {
+                "main_subject": "An empty avenue",
+                "environment": "urban street",
+                "foreground": "abandoned cars",
+                "background": "distant skyline",
+                "color_palette": "cold blue",
+            },
+        },
+        {
+            "id": "scene_002",
+            "title": "The last room",
+            "visual_description": "A survivor waits beside a large apartment window.",
+            "environment": "room",
+            "mood": "uneasy",
+            "characters": ["observer"],
+        },
+        {
+            "id": "scene_003",
+            "title": "Into the forest",
+            "visual_description": "A lone figure crosses a dense forest beneath a cloudy sky.",
+            "environment": "forest",
+            "mood": "reflective",
+            "characters": ["observer"],
+        },
+    ]
+    outputs = []
+    for scene in scenes:
+        request = ImageRequest(
+            scene["id"], scene,
+            [{"id": "observer", "description": "dark coat and copper scarf"}],
+            1920, 1080,
+        )
+        output = provider.generate_image(request, tmp_path / f"{scene['id']}.svg")
+        assert validate_image(output, 1920, 1080).valid
+        content = output.read_text(encoding="utf-8")
+        assert 'viewBox="0 0 1920 1080"' in content
+        assert "url(#vignette)" in content
+        outputs.append(content)
+    assert len(set(outputs)) == 3
+    assert all("Phase 2 placeholder" not in content for content in outputs)
