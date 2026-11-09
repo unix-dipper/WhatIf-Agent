@@ -1,0 +1,16 @@
+{
+  "profile": "demo",
+  "topic": "What if humans could see 10 seconds into the future?",
+  "source": "built-in demo plan",
+  "image_provider": "svg",
+  "image_kind": "svg-generated illustration",
+  "tts_provider": "synthetic prerecorded test audio",
+  "scene_count": 5,
+  "resolution": "1280x720",
+  "fps": 30,
+  "video": "/root/WhatIf-Agent/episode/produced/demo-what-if-humans-could-see-10-seconds-into-the-fut/output/whatif_episode.mp4",
+  "duration_seconds": 60.010667,
+  "warnings": [
+    "Script is short at 50 words for a 1.25-minute target."
+  ]
+}

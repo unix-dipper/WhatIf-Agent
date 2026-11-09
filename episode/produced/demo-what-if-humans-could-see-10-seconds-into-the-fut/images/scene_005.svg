@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+<defs>
+ <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#17324d"/><stop offset="1" stop-color="#4d7890"/></linearGradient>
+ <linearGradient id="light" x2="1" y2="1"><stop stop-color="#f4ddaa" stop-opacity=".55"/><stop offset="1" stop-color="#d9a15d" stop-opacity="0"/></linearGradient>
+ <filter id="soft"><feGaussianBlur stdDeviation="18"/></filter>
+</defs>
+<rect width="1280" height="720" fill="url(#sky)"/>
+<circle cx='980' cy='170' r='82' fill='#f3c878' opacity='.9'/><circle cx='980' cy='170' r='125' fill='#f3c878' opacity='.14' filter='url(#soft)'/><path d='M80 190 Q150 120 220 190 Q290 110 360 190 Q420 190 430 240 H60 Q60 200 80 190Z' fill='#d6d5ca' opacity='.28'/><path d='M650 280 Q720 205 790 280 Q850 210 930 280 H620Z' fill='#d6d5ca' opacity='.2'/><path d='M0 510 V380 H120 V440 H220 V320 H340 V450 H450 V360 H560 V430 H690 V290 H790 V430 H900 V350 H1010 V410 H1120 V300 H1280 V720 H0Z' fill='#111d31' stroke='#080d17' stroke-width='8'/>
+<rect width="1280" height="720" fill="url(#light)" opacity=".28"/>
+<rect x="42" y="596" width="1196" height="82" rx="14" fill="#070b15" opacity=".72"/>
+<text x="72" y="635" fill="#fff" font-family="sans-serif" font-size="30" font-weight="bold">What Remains</text>
+<text x="72" y="663" fill="#f4ddaa" font-family="sans-serif" font-size="16">2D illustrated documentary • reflective</text>
+</svg>

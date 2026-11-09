@@ -15,5 +15,12 @@
   "transition_seconds": 0.35,
   "subtitle_max_chars": 84,
   "output_dir": "episode/output",
-  "work_dir": "episode"
+  "work_dir": "episode",
+  "ollama_url": "http://127.0.0.1:11434",
+  "ai_model": "qwen2.5:7b",
+  "ai_timeout_seconds": 300,
+  "ai_temperature": 0.75,
+  "ai_max_tokens": 4096,
+  "ai_retries": 2,
+  "ai_output_dir": "episode/generated"
 }

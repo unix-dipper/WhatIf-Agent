@@ -1,0 +1,83 @@
+{
+  "title": "What if humans could see 10 seconds into the future?",
+  "description": "A short autonomous-production demonstration using the local SVG illustration provider.",
+  "resolution": "1280x720",
+  "fps": 30,
+  "duration_seconds": 60.0,
+  "video": "/root/WhatIf-Agent/episode/produced/demo-what-if-humans-could-see-10-seconds-into-the-fut/output/whatif_episode.mp4",
+  "subtitles": "/root/WhatIf-Agent/episode/produced/demo-what-if-humans-could-see-10-seconds-into-the-fut/output/whatif_episode.srt",
+  "input_hash": "ebf4ff3be8de7fc5c6996ed17c866ee3f55aaa9bdf77615003a2cb7491da88d6",
+  "scenes": [
+    {
+      "id": "scene_001",
+      "image": "/root/WhatIf-Agent/episode/produced/demo-what-if-humans-could-see-10-seconds-into-the-fut/images/scene_001.svg",
+      "image_sha256": "3320c730becd4baef69dc3b4b6dfd5590486876b8c0b42fbf28c81a8b08cf4bc",
+      "narration_audio": "/root/WhatIf-Agent/episode/produced/demo-what-if-humans-could-see-10-seconds-into-the-fut/audio/scene_001.wav",
+      "narration_sha256": "17056f38fa7c2e81343b6cdbd44f296a150a0d50b1ecb3b55fb1b1c1a12434d8",
+      "narration_text_sha256": "22aff9fa33c63fab23298301e1ff842f909acd83f6c1925d535aea7620457e08",
+      "duration": 12.0,
+      "clip": "/root/WhatIf-Agent/episode/produced/demo-what-if-humans-could-see-10-seconds-into-the-fut/work/clips/scene_001.mp4",
+      "motion": "deterministic",
+      "cache_key": "b823ae7ae95fd410e662065dc49cf6ed9fd8389bb83fd6f99ea9145956522809"
+    },
+    {
+      "id": "scene_002",
+      "image": "/root/WhatIf-Agent/episode/produced/demo-what-if-humans-could-see-10-seconds-into-the-fut/images/scene_002.svg",
+      "image_sha256": "3f57a9511d8df83cedad6a1f20e14dd8afa137b2fae33fcf3965453e8f43aa3a",
+      "narration_audio": "/root/WhatIf-Agent/episode/produced/demo-what-if-humans-could-see-10-seconds-into-the-fut/audio/scene_002.wav",
+      "narration_sha256": "f16c640abbdd8ce7f6d76595e762939ca1edd0f158f60da12305118eb2215477",
+      "narration_text_sha256": "d509b995057e7f213a460501ed4300b8efc821f245136ac7f506317ffcccce20",
+      "duration": 12.0,
+      "clip": "/root/WhatIf-Agent/episode/produced/demo-what-if-humans-could-see-10-seconds-into-the-fut/work/clips/scene_002.mp4",
+      "motion": "deterministic",
+      "cache_key": "e848b221f0c0813a4f303714e050be70fc605ddcbe663196a33b99bb168fbddc"
+    },
+    {
+      "id": "scene_003",
+      "image": "/root/WhatIf-Agent/episode/produced/demo-what-if-humans-could-see-10-seconds-into-the-fut/images/scene_003.svg",
+      "image_sha256": "cbddeee1bf7979d672cb4a76d61bf6a22b608f053289a0ad2493dfe0cf646712",
+      "narration_audio": "/root/WhatIf-Agent/episode/produced/demo-what-if-humans-could-see-10-seconds-into-the-fut/audio/scene_003.wav",
+      "narration_sha256": "176a456096a8356595ff6873b8fb019bf363840d9b123331507d3950a4f61445",
+      "narration_text_sha256": "cce3e693f0c74b6d428c8a9c15e5846f6200d2f75a33f1669c3c52263bd5d9ac",
+      "duration": 12.0,
+      "clip": "/root/WhatIf-Agent/episode/produced/demo-what-if-humans-could-see-10-seconds-into-the-fut/work/clips/scene_003.mp4",
+      "motion": "deterministic",
+      "cache_key": "12b423c6f58172cac684b3eb1bc83c94bcf129a04a03d0e7ec016e92b1920034"
+    },
+    {
+      "id": "scene_004",
+      "image": "/root/WhatIf-Agent/episode/produced/demo-what-if-humans-could-see-10-seconds-into-the-fut/images/scene_004.svg",
+      "image_sha256": "49021bc0051eac2c6606cfc8715478bb003fa89d31f76e253403e3a7d85160fb",
+      "narration_audio": "/root/WhatIf-Agent/episode/produced/demo-what-if-humans-could-see-10-seconds-into-the-fut/audio/scene_004.wav",
+      "narration_sha256": "39832bc247f94745c6ad1d0a29648aab04922498f5c60f3852cb02bbc12761f2",
+      "narration_text_sha256": "567a6d5f77614937881636fbe0d156a13589764930e8e820ed6d0e025dca51fa",
+      "duration": 12.0,
+      "clip": "/root/WhatIf-Agent/episode/produced/demo-what-if-humans-could-see-10-seconds-into-the-fut/work/clips/scene_004.mp4",
+      "motion": "deterministic",
+      "cache_key": "0d670878414082b04a3c63013780b78dd9f79608133ea8b1e8b056d9adeefb60"
+    },
+    {
+      "id": "scene_005",
+      "image": "/root/WhatIf-Agent/episode/produced/demo-what-if-humans-could-see-10-seconds-into-the-fut/images/scene_005.svg",
+      "image_sha256": "83a290d938a45d914a922b3e4346d08e40a328f5559cf2435957c68579f9e035",
+      "narration_audio": "/root/WhatIf-Agent/episode/produced/demo-what-if-humans-could-see-10-seconds-into-the-fut/audio/scene_005.wav",
+      "narration_sha256": "4b6052e989291cb7fec96963df8ea78e7ee2d471c087db4bb01bf210fde6db21",
+      "narration_text_sha256": "10483d54cb345c675d81253fd0809f4cef7b5706e7750d573a5cb17c25eb33ee",
+      "duration": 12.0,
+      "clip": "/root/WhatIf-Agent/episode/produced/demo-what-if-humans-could-see-10-seconds-into-the-fut/work/clips/scene_005.mp4",
+      "motion": "deterministic",
+      "cache_key": "369f08960a1061122f1b18fb4be1c10302e491c15d27fc4c879d89a2165736f6"
+    }
+  ],
+  "ffprobe_duration_seconds": 60.010667,
+  "ffprobe_streams": [
+    {
+      "codec_type": "video",
+      "codec_name": "h264"
+    },
+    {
+      "codec_type": "audio",
+      "codec_name": "aac"
+    }
+  ]
+}

@@ -3,4 +3,5 @@ __pycache__/
 .venv/
 episode/output/*
 episode/clips/*
+episode/produced/**/work/
 logs/*.log

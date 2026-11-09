@@ -27,6 +27,13 @@ class Config:
     subtitle_max_chars: int = 84
     output_dir: str = "episode/output"
     work_dir: str = "episode"
+    ollama_url: str = "http://127.0.0.1:11434"
+    ai_model: str = "qwen2.5:7b"
+    ai_timeout_seconds: float = 300.0
+    ai_temperature: float = 0.75
+    ai_max_tokens: int = 4096
+    ai_retries: int = 2
+    ai_output_dir: str = "episode/generated"
     extra: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
@@ -59,6 +66,10 @@ class Config:
             raise ValidationError("music_volume must be between 0 and 1.")
         if self.max_zoom < 1 or self.scene_pause_seconds < 0:
             raise ValidationError("max_zoom must be >= 1 and scene_pause_seconds must be >= 0.")
+        if self.ai_timeout_seconds <= 0 or self.ai_max_tokens <= 0 or self.ai_retries < 0:
+            raise ValidationError("AI timeout, token limit, and retry count must be positive.")
+        if not self.ollama_url.startswith(("http://", "https://")):
+            raise ValidationError("ollama_url must start with http:// or https://.")
 
     @property
     def width_height(self) -> tuple[int, int]:

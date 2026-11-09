@@ -1,6 +1,6 @@
 # WhatIf Agent
 
-WhatIf Agent is a local-first Phase 1 production engine. It consumes an episode JSON file, scene images, and either prerecorded WAV narration or a local Piper voice model, then creates scene MP4 clips, an SRT subtitle file, a manifest, and a final H.264/AAC MP4.
+WhatIf Agent is a local-first production engine. Phase 1 consumes an episode JSON file, scene images, and either prerecorded WAV narration or a local Piper voice model, then creates scene MP4 clips, an SRT subtitle file, a manifest, and a final H.264/AAC MP4. Phase 2 adds an optional local Ollama storytelling brain that creates reviewable planning data and a directly Phase 1-compatible episode JSON.
 
 The sample uses original SVG placeholder graphics and generated tone WAVs. These are test assets, not AI-generated cinematic media. Replace them with your own licensed images and narration before publishing.
 
@@ -36,6 +36,80 @@ Outputs are written to `episode\output\whatif_episode.mp4`, `whatif_episode.srt`
 
 The engine renders 1920x1080 at 30 FPS by default. For a faster local test, temporarily set `"resolution": "1280x720"` in `config.json`, then restore 1080p for delivery. FFmpeg uses CPU encoding with two threads and a `veryfast` preset, suitable for an integrated-GPU machine.
 
+## Phase 2: local storytelling
+
+Phase 2 uses Ollama's local HTTP service and does not download models automatically. Install Ollama from [ollama.com](https://ollama.com/), start it, and explicitly install a model in PowerShell. `qwen2.5:7b` is the recommended quality/structured-output default; `qwen2.5:3b` is the lighter, faster option for 16 GB CPU-only machines. Exact model size and speed depend on the Ollama build and quantization.
+
+```powershell
+ollama pull qwen2.5:3b
+python main.py --ai-check
+python main.py --list-models
+python main.py --generate "What if humans could see 10 seconds into the future?" --duration 6 --model qwen2.5:3b
+```
+
+Set `ollama_url`, `ai_model`, `ai_timeout_seconds`, `ai_temperature`, `ai_max_tokens`, `ai_retries`, and `ai_output_dir` in `config.json` to change local AI behavior. Generation is staged and resumable: analysis, outline, and scene planning are cached in `*.stage.json` files. Successful stages are reused when the topic and prompt are unchanged.
+
+Generated episodes are stored below `episode/generated/<topic-slug>/`:
+
+- `planning.json`: complete Phase 2 plan with scene prompts and continuity data.
+- `episode.json`: Phase 1-compatible input with original SVG placeholders.
+- `script.txt`: human-readable narration.
+- `analysis.json`, `outline.json`, `characters.json`: reviewable planning artifacts.
+- `images/`: clearly labeled placeholders to make the episode immediately renderable; replace them with Phase 3 assets later.
+
+Review either format before rendering:
+
+```powershell
+python main.py --review episode\generated\<topic-slug>\planning.json
+python main.py --review episode\generated\<topic-slug>\episode.json
+python main.py --episode episode\generated\<topic-slug>\episode.json
+```
+
+The Phase 1 and Phase 2 handoff is direct: Phase 2 writes `episode.json` using the
+same required `title`, `description`, `language`, `resolution`, `scenes`, `id`,
+`image`, and `narration` fields that Phase 1 validates. Replace the generated
+placeholder images with Phase 3 images, configure Piper for narration (or add
+`narration_audio` files), then run the final command above. No JSON copying or
+manual narration transfer is required.
+
+Phase 2 does not perform web research, image generation, Piper narration, or automatic model downloads. It distinguishes fact/extrapolation/speculation fields in planning data, but offline model knowledge is not a substitute for verified research.
+
+## Phase 3 and Phase 4: local illustrations and autonomous production
+
+The tested image provider is `svg`. It creates actual layered 2D illustrated scenes
+with graphic-novel outlines, buildings, streets, windows, furniture, lighting,
+atmospheric gradients, silhouettes, and scene-aware palettes. It is not a blank
+background or renamed placeholder. It requires no model download and runs on CPU.
+
+Run the complete local demo, which uses five varied scenes, 720p output, and clearly
+reported synthetic prerecorded test audio so Piper is not required:
+
+```powershell
+python main.py --providers
+python main.py --production-check
+python main.py --produce "What if humans could see 10 seconds into the future?" --profile demo
+```
+
+The demo output is under `episode\produced\<topic>\output\`. Use `--force` to
+regenerate images, audio, clips, and video. Without `--force`, image sidecars and
+Phase 1 manifests allow completed work to resume.
+
+Full production uses Ollama for the story and Piper for narration:
+
+```powershell
+python main.py --produce "What if a zombie outbreak started tomorrow?" --profile full --duration 7 --model qwen2.5:3b
+```
+
+Full mode requires a configured Piper model and executable; it stops clearly rather
+than substituting synthetic audio. Full planning targets approximately 30–45 visual
+scenes for a typical 5–8 minute episode. The current optional diffusion/OpenVINO
+backend is intentionally not installed or claimed as tested; choose SVG for the
+reliable local fallback. No image model is downloaded automatically.
+
+Production reports identify the image provider, audio source, resolution, duration,
+scene count, and output path. `production_report.json`, `planning.json`, `episode.json`,
+the generated SVGs, audio, SRT, manifest, and final MP4 are preserved together.
+
 ## Episode format
 
 Paths are relative to the JSON file and are prevented from escaping its directory. Required fields are `title`, `description`, `language`, `resolution`, and a non-empty `scenes` array. Each scene requires a unique `id`, an existing `image`, and non-empty `narration`.
@@ -58,13 +132,17 @@ Set `voice_model` to the model path, `voice_config` to its companion JSON path, 
 
 ## Architecture and roadmap
 
-`episode.py` validates the future-compatible JSON contract. `tts.py` isolates Piper. `video.py` creates deterministic restrained motion and assembles clips. `subtitles.py` creates SRT cues. `pipeline.py` coordinates sequential, resumable work and writes a manifest. `diagnostics.py` makes missing local tools explicit.
+`episode.py` validates the future-compatible JSON contract. `tts.py` isolates Piper. `video.py` creates deterministic restrained motion and assembles clips. `subtitles.py` creates SRT cues. `pipeline.py` coordinates sequential, resumable work and writes a manifest. `diagnostics.py` makes missing local tools explicit. `whatif/ai/ollama_client.py` talks only to the local Ollama API; `generation_pipeline.py` performs staged analysis, outline, scene planning, validation, placeholder export, and resume.
 
 Phase 2 can write the same JSON directly from a local story generator. Phase 3 can place generated images at the referenced paths; the production engine does not need to know how they were made. Future providers can implement the small narration boundary represented by `PiperTTS`.
 
 ## Known limitations
 
-- No automatic image generation, story generation, word-level subtitle alignment, GUI, or cloud integration.
+- No automatic image generation, word-level subtitle alignment, GUI, or cloud integration.
+- Phase 2 story generation requires a separately installed, locally running Ollama service and model; no real Ollama generation was run in environments without that service.
+- Phase 2-only exports use placeholders; Phase 4 demo production replaces them with SVG-generated illustrations.
+- SVG illustrations are a deterministic local fallback, not diffusion-generated images.
+- Diffusion/OpenVINO image generation is optional future work and was not claimed as tested in this environment.
 - Scene transitions and sound effects are deferred while their input fields remain schema-compatible.
 - Scene pauses are currently disabled; subtitle and video timelines are based on measured narration durations with no hidden gap.
 - Windows FFmpeg/Piper installation is environment-specific and must be verified locally.

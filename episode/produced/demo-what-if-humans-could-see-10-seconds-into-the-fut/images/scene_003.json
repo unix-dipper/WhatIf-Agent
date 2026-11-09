@@ -1,0 +1,11 @@
+{
+  "cache_key": "cd98fb403724d28752af90789c903ae23d6e0028b9ba621edbdcd194b10f325a",
+  "provider": {
+    "name": "svg",
+    "description": "Local layered 2D graphic-novel illustration renderer",
+    "model": null,
+    "available": true,
+    "generated_kind": "svg-generated illustration"
+  },
+  "source_sha256": "cbddeee1bf7979d672cb4a76d61bf6a22b608f053289a0ad2493dfe0cf646712"
+}
