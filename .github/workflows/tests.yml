@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - illustration-engine-upgrade
+      - fix/svg-rasterization
   pull_request:
   workflow_dispatch:
 
