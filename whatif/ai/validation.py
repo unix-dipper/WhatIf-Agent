@@ -75,6 +75,6 @@ def validate_plan(plan: dict[str, Any], *, target_minutes: float) -> PlanReport:
         report.warnings.append(f"Script is short at {words} words for a {target_minutes:g}-minute target.")
     if words > int(expected * 1.65):
         report.warnings.append(f"Script is long at {words} words for a {target_minutes:g}-minute target.")
-    if len(scenes) < 20 and target_minutes >= 5:
-        report.warnings.append("A 5–8 minute episode usually benefits from approximately 20–35 scenes.")
+    if len(scenes) < 30 and target_minutes >= 5:
+        report.warnings.append("A 5–8 minute episode usually benefits from approximately 30–45 scenes.")
     return report

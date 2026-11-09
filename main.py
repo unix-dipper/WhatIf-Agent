@@ -11,6 +11,7 @@ from whatif.errors import WhatIfError
 from whatif.ai import GenerationOptions, OllamaClient, OllamaError, StoryGenerationPipeline
 from whatif.ai.validation import validate_plan
 from whatif.pipeline import render_episode
+from whatif.production import ProductionDirector, ProductionOptions
 from whatif.tts import PiperTTS
 from whatif.utils import executable_available, setup_logging
 
@@ -26,6 +27,12 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--duration", type=float, default=None, help="Target generated episode length in minutes.")
     parser.add_argument("--model", help="Ollama model name for generation.")
     parser.add_argument("--review", type=Path, help="Review a generated planning.json or episode.json.")
+    parser.add_argument("--providers", action="store_true", help="List available local image providers.")
+    parser.add_argument("--production-check", action="store_true", help="Check end-to-end production prerequisites.")
+    parser.add_argument("--produce", metavar="TOPIC", help="Run the autonomous production workflow.")
+    parser.add_argument("--profile", choices=("demo", "full"), default="demo")
+    parser.add_argument("--provider", default="svg", help="Image provider (currently: svg).")
+    parser.add_argument("--resume", action="store_true", help="Reuse completed production assets.")
     parser.add_argument("--force", action="store_true", help="Regenerate all narration, clips, and output.")
     parser.add_argument("--verbose", action="store_true")
     return parser
@@ -37,6 +44,43 @@ def main() -> int:
         config = Config.load(args.config)
         logger = setup_logging(Path("logs"), args.verbose)
         client = OllamaClient(config.ollama_url, timeout=config.ai_timeout_seconds)
+        if args.providers:
+            from whatif.images.providers import available_providers
+            for name, provider in available_providers(logger=logger).items():
+                info = provider.get_provider_info()
+                print(f"{name}: {info.description} [{info.generated_kind}]")
+            return 0
+        if args.production_check:
+            from whatif.images.providers import available_providers
+            print(f"ffmpeg: {'available' if executable_available(config.ffmpeg) else 'missing'}")
+            print(f"ffprobe: {'available' if executable_available(config.ffprobe) else 'missing'}")
+            print("svg provider: available")
+            try:
+                client.check()
+                print("ollama: available")
+            except OllamaError as exc:
+                print(f"ollama: unavailable ({exc})")
+            if config.voice_model:
+                print(f"piper: {'available' if executable_available(config.piper) else 'missing'}")
+            else:
+                print("piper: not configured (required for full production without scene audio)")
+            return 0
+        if args.produce:
+            if args.profile == "full" and args.duration is None:
+                duration = 6.0
+            else:
+                duration = args.duration or 1.25
+            result = ProductionDirector(config, project_root=Path.cwd(), logger=logger).run(
+                ProductionOptions(
+                    topic=args.produce, profile=args.profile, duration_minutes=duration,
+                    provider=args.provider, model=args.model, force=args.force, resume=args.resume,
+                )
+            )
+            report = result["report"]
+            print(f"Production complete: {report['video']}")
+            print(f"Scenes: {report['scene_count']} | Duration: {report['duration_seconds']:.2f}s | "
+                  f"Resolution: {report['resolution']} | Images: {report['image_kind']}")
+            return 0
         if args.ai_check or args.list_models:
             client.check()
             models = client.list_models()

@@ -74,6 +74,42 @@ manual narration transfer is required.
 
 Phase 2 does not perform web research, image generation, Piper narration, or automatic model downloads. It distinguishes fact/extrapolation/speculation fields in planning data, but offline model knowledge is not a substitute for verified research.
 
+## Phase 3 and Phase 4: local illustrations and autonomous production
+
+The tested image provider is `svg`. It creates actual layered 2D illustrated scenes
+with graphic-novel outlines, buildings, streets, windows, furniture, lighting,
+atmospheric gradients, silhouettes, and scene-aware palettes. It is not a blank
+background or renamed placeholder. It requires no model download and runs on CPU.
+
+Run the complete local demo, which uses five varied scenes, 720p output, and clearly
+reported synthetic prerecorded test audio so Piper is not required:
+
+```powershell
+python main.py --providers
+python main.py --production-check
+python main.py --produce "What if humans could see 10 seconds into the future?" --profile demo
+```
+
+The demo output is under `episode\produced\<topic>\output\`. Use `--force` to
+regenerate images, audio, clips, and video. Without `--force`, image sidecars and
+Phase 1 manifests allow completed work to resume.
+
+Full production uses Ollama for the story and Piper for narration:
+
+```powershell
+python main.py --produce "What if a zombie outbreak started tomorrow?" --profile full --duration 7 --model qwen2.5:3b
+```
+
+Full mode requires a configured Piper model and executable; it stops clearly rather
+than substituting synthetic audio. Full planning targets approximately 30–45 visual
+scenes for a typical 5–8 minute episode. The current optional diffusion/OpenVINO
+backend is intentionally not installed or claimed as tested; choose SVG for the
+reliable local fallback. No image model is downloaded automatically.
+
+Production reports identify the image provider, audio source, resolution, duration,
+scene count, and output path. `production_report.json`, `planning.json`, `episode.json`,
+the generated SVGs, audio, SRT, manifest, and final MP4 are preserved together.
+
 ## Episode format
 
 Paths are relative to the JSON file and are prevented from escaping its directory. Required fields are `title`, `description`, `language`, `resolution`, and a non-empty `scenes` array. Each scene requires a unique `id`, an existing `image`, and non-empty `narration`.
@@ -104,7 +140,9 @@ Phase 2 can write the same JSON directly from a local story generator. Phase 3 c
 
 - No automatic image generation, word-level subtitle alignment, GUI, or cloud integration.
 - Phase 2 story generation requires a separately installed, locally running Ollama service and model; no real Ollama generation was run in environments without that service.
-- Generated scene images are placeholders until Phase 3 replaces them.
+- Phase 2-only exports use placeholders; Phase 4 demo production replaces them with SVG-generated illustrations.
+- SVG illustrations are a deterministic local fallback, not diffusion-generated images.
+- Diffusion/OpenVINO image generation is optional future work and was not claimed as tested in this environment.
 - Scene transitions and sound effects are deferred while their input fields remain schema-compatible.
 - Scene pauses are currently disabled; subtitle and video timelines are based on measured narration durations with no hidden gap.
 - Windows FFmpeg/Piper installation is environment-specific and must be verified locally.

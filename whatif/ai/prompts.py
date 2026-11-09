@@ -25,7 +25,7 @@ climax, ending, and continuity_notes. Base it on this analysis:
 
 def scene_prompt(topic: str, analysis: dict, outline: dict, duration: float) -> str:
     return f"""Turn this topic into a complete scene plan for a {duration:g}-minute narrated episode.
-Prefer roughly 20–35 visually meaningful scenes for 5–8 minutes, but choose the count that fits.
+Prefer roughly 30–45 visually meaningful scenes for 5–8 minutes, but choose the count that fits.
 Return JSON with title, description, characters (array of objects with id, name, description),
 and scenes. Each scene must contain id (scene_001 style), title, story_beat, narrative_purpose,
 narration, duration_seconds, visual_description, image_prompt (an object with main_subject,

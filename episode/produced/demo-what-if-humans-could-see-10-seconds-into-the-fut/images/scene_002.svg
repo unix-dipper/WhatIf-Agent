@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+<defs>
+ <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#17324d"/><stop offset="1" stop-color="#4d7890"/></linearGradient>
+ <linearGradient id="light" x2="1" y2="1"><stop stop-color="#f4ddaa" stop-opacity=".55"/><stop offset="1" stop-color="#d9a15d" stop-opacity="0"/></linearGradient>
+ <filter id="soft"><feGaussianBlur stdDeviation="18"/></filter>
+</defs>
+<rect width="1280" height="720" fill="url(#sky)"/>
+<path d='M0 450 L170 300 300 430 470 250 640 430 820 280 1010 430 1180 230 1280 390 V720 H0Z' fill='#17233a' opacity='.82'/><rect x='30' y='250' width='190' height='220' fill='#17324d' stroke='#0a1220' stroke-width='5'/><g fill='#f4ddaa' opacity='.55'><rect x="52" y="285" width="14" height="20"/><rect x="52" y="327" width="14" height="20"/><rect x="86" y="285" width="14" height="20"/><rect x="86" y="327" width="14" height="20"/><rect x="120" y="285" width="14" height="20"/><rect x="120" y="327" width="14" height="20"/></g><rect x='250' y='330' width='160' height='140' fill='#17324d' stroke='#0a1220' stroke-width='5'/><g fill='#f4ddaa' opacity='.55'><rect x="272" y="365" width="14" height="20"/><rect x="272" y="407" width="14" height="20"/><rect x="306" y="365" width="14" height="20"/><rect x="306" y="407" width="14" height="20"/><rect x="340" y="365" width="14" height="20"/><rect x="340" y="407" width="14" height="20"/></g><rect x='1040' y='270' width='210' height='200' fill='#17324d' stroke='#0a1220' stroke-width='5'/><g fill='#f4ddaa' opacity='.55'><rect x="1062" y="305" width="14" height="20"/><rect x="1062" y="347" width="14" height="20"/><rect x="1096" y="305" width="14" height="20"/><rect x="1096" y="347" width="14" height="20"/><rect x="1130" y="305" width="14" height="20"/><rect x="1130" y="347" width="14" height="20"/></g><path d='M0 720 L420 465 H830 L1280 720Z' fill='#101827' stroke='#080d17' stroke-width='8'/><path d='M620 720 L625 480' stroke='#d7b36b' stroke-width='7' stroke-dasharray='32 28' opacity='.8'/><g opacity='.85'><circle cx='570' cy='423' r='25' fill='#0b101b'/><path d='M542 450 Q570 420 598 450 L612 560 H528Z' fill='#111827' stroke='#050912' stroke-width='6'/><path d='M535 495 L500 540 M605 495 L640 540' stroke='#111827' stroke-width='15'/></g>
+<rect width="1280" height="720" fill="url(#light)" opacity=".28"/>
+<rect x="42" y="596" width="1196" height="82" rx="14" fill="#070b15" opacity=".72"/>
+<text x="72" y="635" fill="#fff" font-family="sans-serif" font-size="30" font-weight="bold">The First Warning</text>
+<text x="72" y="663" fill="#f4ddaa" font-family="sans-serif" font-size="16">2D illustrated documentary • uneasy</text>
+</svg>

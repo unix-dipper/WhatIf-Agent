@@ -1,0 +1,138 @@
+{
+  "title": "What if humans could see 10 seconds into the future?",
+  "description": "A short autonomous-production demonstration using the local SVG illustration provider.",
+  "language": "en",
+  "resolution": "1080p",
+  "scenes": [
+    {
+      "id": "scene_001",
+      "image": "images/scene_001.svg",
+      "narration_audio": "audio/scene_001.wav",
+      "narration": "A city wakes beneath an ordinary dawn.",
+      "image_prompt": {
+        "main_subject": "A focused illustrated documentary composition",
+        "environment": "street",
+        "composition": "Wide cinematic panel with foreground, middle ground, and background",
+        "camera_angle": "Eye-level documentary framing",
+        "foreground": "Graphic silhouettes and environmental details",
+        "background": "Atmospheric city or interior depth",
+        "lighting": "Directional dusk light",
+        "color_palette": "Navy, copper, amber, muted teal",
+        "atmosphere": "Layered and cinematic",
+        "emotional_tone": "calm",
+        "art_style": "2D illustrated documentary, graphic novel ink lines and painted shadows",
+        "negative_prompt": "photorealism, glossy 3D, text, watermark, plastic characters"
+      },
+      "visual_description": "Layered 2D illustrated street composition with clear focal subject.",
+      "story_beat": "setup",
+      "characters": [],
+      "duration_hint": 12
+    },
+    {
+      "id": "scene_002",
+      "image": "images/scene_002.svg",
+      "narration_audio": "audio/scene_002.wav",
+      "narration": "A signal appears, and one observer notices the pattern.",
+      "image_prompt": {
+        "main_subject": "A focused illustrated documentary composition",
+        "environment": "person",
+        "composition": "Wide cinematic panel with foreground, middle ground, and background",
+        "camera_angle": "Eye-level documentary framing",
+        "foreground": "Graphic silhouettes and environmental details",
+        "background": "Atmospheric city or interior depth",
+        "lighting": "Directional dusk light",
+        "color_palette": "Navy, copper, amber, muted teal",
+        "atmosphere": "Layered and cinematic",
+        "emotional_tone": "uneasy",
+        "art_style": "2D illustrated documentary, graphic novel ink lines and painted shadows",
+        "negative_prompt": "photorealism, glossy 3D, text, watermark, plastic characters"
+      },
+      "visual_description": "Layered 2D illustrated person composition with clear focal subject.",
+      "story_beat": "first_consequences",
+      "characters": [
+        "observer"
+      ],
+      "duration_hint": 12
+    },
+    {
+      "id": "scene_003",
+      "image": "images/scene_003.svg",
+      "narration_audio": "audio/scene_003.wav",
+      "narration": "Crowds gather as the familiar streets become uncertain.",
+      "image_prompt": {
+        "main_subject": "A focused illustrated documentary composition",
+        "environment": "crowd",
+        "composition": "Wide cinematic panel with foreground, middle ground, and background",
+        "camera_angle": "Eye-level documentary framing",
+        "foreground": "Graphic silhouettes and environmental details",
+        "background": "Atmospheric city or interior depth",
+        "lighting": "Directional dusk light",
+        "color_palette": "Navy, copper, amber, muted teal",
+        "atmosphere": "Layered and cinematic",
+        "emotional_tone": "panic",
+        "art_style": "2D illustrated documentary, graphic novel ink lines and painted shadows",
+        "negative_prompt": "photorealism, glossy 3D, text, watermark, plastic characters"
+      },
+      "visual_description": "Layered 2D illustrated crowd composition with clear focal subject.",
+      "story_beat": "escalation",
+      "characters": [],
+      "duration_hint": 12
+    },
+    {
+      "id": "scene_004",
+      "image": "images/scene_004.svg",
+      "narration_audio": "audio/scene_004.wav",
+      "narration": "Inside a small apartment, a survivor chooses which light to leave on.",
+      "image_prompt": {
+        "main_subject": "A focused illustrated documentary composition",
+        "environment": "room",
+        "composition": "Wide cinematic panel with foreground, middle ground, and background",
+        "camera_angle": "Eye-level documentary framing",
+        "foreground": "Graphic silhouettes and environmental details",
+        "background": "Atmospheric city or interior depth",
+        "lighting": "Directional dusk light",
+        "color_palette": "Navy, copper, amber, muted teal",
+        "atmosphere": "Layered and cinematic",
+        "emotional_tone": "tense",
+        "art_style": "2D illustrated documentary, graphic novel ink lines and painted shadows",
+        "negative_prompt": "photorealism, glossy 3D, text, watermark, plastic characters"
+      },
+      "visual_description": "Layered 2D illustrated room composition with clear focal subject.",
+      "story_beat": "turning_point",
+      "characters": [
+        "observer"
+      ],
+      "duration_hint": 12
+    },
+    {
+      "id": "scene_005",
+      "image": "images/scene_005.svg",
+      "narration_audio": "audio/scene_005.wav",
+      "narration": "By sunrise, the world is still here, but nobody sees it the same way.",
+      "image_prompt": {
+        "main_subject": "A focused illustrated documentary composition",
+        "environment": "sky",
+        "composition": "Wide cinematic panel with foreground, middle ground, and background",
+        "camera_angle": "Eye-level documentary framing",
+        "foreground": "Graphic silhouettes and environmental details",
+        "background": "Atmospheric city or interior depth",
+        "lighting": "Directional dusk light",
+        "color_palette": "Navy, copper, amber, muted teal",
+        "atmosphere": "Layered and cinematic",
+        "emotional_tone": "reflective",
+        "art_style": "2D illustrated documentary, graphic novel ink lines and painted shadows",
+        "negative_prompt": "photorealism, glossy 3D, text, watermark, plastic characters"
+      },
+      "visual_description": "Layered 2D illustrated sky composition with clear focal subject.",
+      "story_beat": "ending",
+      "characters": [],
+      "duration_hint": 12
+    }
+  ],
+  "metadata": {
+    "phase": 4,
+    "image_provider": "svg",
+    "demo": true,
+    "planning_file": "planning.json"
+  }
+}

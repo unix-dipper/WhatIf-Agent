@@ -1,0 +1,165 @@
+{
+  "title": "What if humans could see 10 seconds into the future?",
+  "description": "A short autonomous-production demonstration using the local SVG illustration provider.",
+  "characters": [
+    {
+      "id": "observer",
+      "name": "The Observer",
+      "description": "Adult figure, dark coat, copper scarf, consistent silhouette."
+    }
+  ],
+  "scenes": [
+    {
+      "id": "scene_001",
+      "title": "Before the Change",
+      "story_beat": "setup",
+      "narrative_purpose": "Advance the setup beat.",
+      "narration": "A city wakes beneath an ordinary dawn.",
+      "duration_seconds": 12,
+      "visual_description": "Layered 2D illustrated street composition with clear focal subject.",
+      "image_prompt": {
+        "main_subject": "A focused illustrated documentary composition",
+        "environment": "street",
+        "composition": "Wide cinematic panel with foreground, middle ground, and background",
+        "camera_angle": "Eye-level documentary framing",
+        "foreground": "Graphic silhouettes and environmental details",
+        "background": "Atmospheric city or interior depth",
+        "lighting": "Directional dusk light",
+        "color_palette": "Navy, copper, amber, muted teal",
+        "atmosphere": "Layered and cinematic",
+        "emotional_tone": "calm",
+        "art_style": "2D illustrated documentary, graphic novel ink lines and painted shadows",
+        "negative_prompt": "photorealism, glossy 3D, text, watermark, plastic characters"
+      },
+      "environment": "street",
+      "characters": [],
+      "mood": "calm",
+      "lighting": "directional dusk",
+      "continuity_notes": "Observer keeps dark coat and copper scarf."
+    },
+    {
+      "id": "scene_002",
+      "title": "The First Warning",
+      "story_beat": "first_consequences",
+      "narrative_purpose": "Advance the first_consequences beat.",
+      "narration": "A signal appears, and one observer notices the pattern.",
+      "duration_seconds": 12,
+      "visual_description": "Layered 2D illustrated person composition with clear focal subject.",
+      "image_prompt": {
+        "main_subject": "A focused illustrated documentary composition",
+        "environment": "person",
+        "composition": "Wide cinematic panel with foreground, middle ground, and background",
+        "camera_angle": "Eye-level documentary framing",
+        "foreground": "Graphic silhouettes and environmental details",
+        "background": "Atmospheric city or interior depth",
+        "lighting": "Directional dusk light",
+        "color_palette": "Navy, copper, amber, muted teal",
+        "atmosphere": "Layered and cinematic",
+        "emotional_tone": "uneasy",
+        "art_style": "2D illustrated documentary, graphic novel ink lines and painted shadows",
+        "negative_prompt": "photorealism, glossy 3D, text, watermark, plastic characters"
+      },
+      "environment": "person",
+      "characters": [
+        "observer"
+      ],
+      "mood": "uneasy",
+      "lighting": "directional dusk",
+      "continuity_notes": "Observer keeps dark coat and copper scarf."
+    },
+    {
+      "id": "scene_003",
+      "title": "The City Reacts",
+      "story_beat": "escalation",
+      "narrative_purpose": "Advance the escalation beat.",
+      "narration": "Crowds gather as the familiar streets become uncertain.",
+      "duration_seconds": 12,
+      "visual_description": "Layered 2D illustrated crowd composition with clear focal subject.",
+      "image_prompt": {
+        "main_subject": "A focused illustrated documentary composition",
+        "environment": "crowd",
+        "composition": "Wide cinematic panel with foreground, middle ground, and background",
+        "camera_angle": "Eye-level documentary framing",
+        "foreground": "Graphic silhouettes and environmental details",
+        "background": "Atmospheric city or interior depth",
+        "lighting": "Directional dusk light",
+        "color_palette": "Navy, copper, amber, muted teal",
+        "atmosphere": "Layered and cinematic",
+        "emotional_tone": "panic",
+        "art_style": "2D illustrated documentary, graphic novel ink lines and painted shadows",
+        "negative_prompt": "photorealism, glossy 3D, text, watermark, plastic characters"
+      },
+      "environment": "crowd",
+      "characters": [],
+      "mood": "panic",
+      "lighting": "directional dusk",
+      "continuity_notes": "Observer keeps dark coat and copper scarf."
+    },
+    {
+      "id": "scene_004",
+      "title": "The Narrow Escape",
+      "story_beat": "turning_point",
+      "narrative_purpose": "Advance the turning_point beat.",
+      "narration": "Inside a small apartment, a survivor chooses which light to leave on.",
+      "duration_seconds": 12,
+      "visual_description": "Layered 2D illustrated room composition with clear focal subject.",
+      "image_prompt": {
+        "main_subject": "A focused illustrated documentary composition",
+        "environment": "room",
+        "composition": "Wide cinematic panel with foreground, middle ground, and background",
+        "camera_angle": "Eye-level documentary framing",
+        "foreground": "Graphic silhouettes and environmental details",
+        "background": "Atmospheric city or interior depth",
+        "lighting": "Directional dusk light",
+        "color_palette": "Navy, copper, amber, muted teal",
+        "atmosphere": "Layered and cinematic",
+        "emotional_tone": "tense",
+        "art_style": "2D illustrated documentary, graphic novel ink lines and painted shadows",
+        "negative_prompt": "photorealism, glossy 3D, text, watermark, plastic characters"
+      },
+      "environment": "room",
+      "characters": [
+        "observer"
+      ],
+      "mood": "tense",
+      "lighting": "directional dusk",
+      "continuity_notes": "Observer keeps dark coat and copper scarf."
+    },
+    {
+      "id": "scene_005",
+      "title": "What Remains",
+      "story_beat": "ending",
+      "narrative_purpose": "Advance the ending beat.",
+      "narration": "By sunrise, the world is still here, but nobody sees it the same way.",
+      "duration_seconds": 12,
+      "visual_description": "Layered 2D illustrated sky composition with clear focal subject.",
+      "image_prompt": {
+        "main_subject": "A focused illustrated documentary composition",
+        "environment": "sky",
+        "composition": "Wide cinematic panel with foreground, middle ground, and background",
+        "camera_angle": "Eye-level documentary framing",
+        "foreground": "Graphic silhouettes and environmental details",
+        "background": "Atmospheric city or interior depth",
+        "lighting": "Directional dusk light",
+        "color_palette": "Navy, copper, amber, muted teal",
+        "atmosphere": "Layered and cinematic",
+        "emotional_tone": "reflective",
+        "art_style": "2D illustrated documentary, graphic novel ink lines and painted shadows",
+        "negative_prompt": "photorealism, glossy 3D, text, watermark, plastic characters"
+      },
+      "environment": "sky",
+      "characters": [],
+      "mood": "reflective",
+      "lighting": "directional dusk",
+      "continuity_notes": "Observer keeps dark coat and copper scarf."
+    }
+  ],
+  "generation": {
+    "topic": "What if humans could see 10 seconds into the future?",
+    "model": "built-in-demo",
+    "target_duration_minutes": 1.25,
+    "warnings": [
+      "Demo uses synthetic prerecorded test audio; Piper was not used."
+    ]
+  }
+}

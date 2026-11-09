@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+<defs>
+ <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#17324d"/><stop offset="1" stop-color="#4d7890"/></linearGradient>
+ <linearGradient id="light" x2="1" y2="1"><stop stop-color="#f4ddaa" stop-opacity=".55"/><stop offset="1" stop-color="#d9a15d" stop-opacity="0"/></linearGradient>
+ <filter id="soft"><feGaussianBlur stdDeviation="18"/></filter>
+</defs>
+<rect width="1280" height="720" fill="url(#sky)"/>
+<rect y='390' width='1280' height='330' fill='#2c2732'/><rect x='790' y='100' width='320' height='250' fill='#172f51' stroke='#101522' stroke-width='14'/><path d='M950 100 V350 M790 225 H1110' stroke='#101522' stroke-width='10'/><circle cx='1030' cy='155' r='34' fill='#f1c979' opacity='.8'/><rect x='110' y='510' width='520' height='80' rx='20' fill='#432e31' stroke='#101522' stroke-width='8'/><rect x='160' y='430' width='120' height='90' fill='#6d4c48' stroke='#101522' stroke-width='8'/><rect x='760' y='470' width='320' height='110' fill='#3a2a31' stroke='#101522' stroke-width='8'/><path d='M680 95 V270' stroke='#101522' stroke-width='10'/><path d='M620 270 Q680 205 740 270Z' fill='#d89d63' stroke='#101522' stroke-width='8'/><circle cx='680' cy='285' r='76' fill='#f6d990' opacity='.15' filter='url(#soft)'/>
+<rect width="1280" height="720" fill="url(#light)" opacity=".28"/>
+<rect x="42" y="596" width="1196" height="82" rx="14" fill="#070b15" opacity=".72"/>
+<text x="72" y="635" fill="#fff" font-family="sans-serif" font-size="30" font-weight="bold">The Narrow Escape</text>
+<text x="72" y="663" fill="#f4ddaa" font-family="sans-serif" font-size="16">2D illustrated documentary • tense</text>
+</svg>
