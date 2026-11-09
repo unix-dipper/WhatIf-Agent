@@ -1,2 +1,2 @@
-# WhatIf Agent uses Python's standard library only.
-# FFmpeg, FFprobe, Piper, and a Piper voice model are external local tools.
+# Native-wheel SVG-to-PNG rasterization for FFmpeg compatibility on Windows.
+svg2png-py>=1.1.0

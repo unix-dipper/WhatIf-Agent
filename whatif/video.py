@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 from pathlib import Path
 from typing import Any
 
@@ -75,6 +76,49 @@ def _validate_streams(
     return {"duration": duration, "video": video, "audio": audio}
 
 
+
+def _rasterize_svg_for_ffmpeg(image: Path, *, width: int, height: int, logger) -> Path:
+    """Convert SVG artwork to a cached PNG because many Windows FFmpeg builds lack SVG decoding."""
+    if image.suffix.lower() != ".svg":
+        return image
+    png = image.with_name(f"{image.stem}.ffmpeg-{width}x{height}.png")
+    metadata = png.with_suffix(".json")
+    digest = hashlib.sha256(image.read_bytes()).hexdigest()
+    try:
+        cached = json.loads(metadata.read_text(encoding="utf-8")) if metadata.is_file() else {}
+    except (OSError, json.JSONDecodeError):
+        cached = {}
+    if png.is_file() and png.stat().st_size > 0 and cached == {
+        "source_sha256": digest, "width": width, "height": height
+    }:
+        return png
+    try:
+        import svg2png_py
+    except ImportError as exc:
+        raise ExternalToolError(
+            "SVG scenes need rasterization before FFmpeg. Install the project dependencies "
+            "with 'python -m pip install -r requirements-dev.txt' (includes resvg), then retry."
+        ) from exc
+    temporary = png.with_name(png.stem + ".tmp.png")
+    try:
+        font_db = svg2png_py.FontDatabase.system()
+        rendered_png = svg2png_py.svg_to_png(image.read_text(encoding="utf-8"), font_db)
+        temporary.write_bytes(rendered_png)
+        if not temporary.is_file() or temporary.stat().st_size == 0:
+            raise ExternalToolError(f"SVG rasterizer produced no PNG for {image}")
+        temporary.replace(png)
+        metadata.write_text(json.dumps({
+            "source_sha256": digest, "width": width, "height": height
+        }, indent=2), encoding="utf-8")
+    except Exception as exc:
+        temporary.unlink(missing_ok=True)
+        if isinstance(exc, ExternalToolError):
+            raise
+        raise ExternalToolError(f"Could not rasterize SVG illustration {image}: {exc}") from exc
+    logger.info("Rasterized SVG for FFmpeg: %s", png.name)
+    return png
+
+
 def render_scene_clip(
     ffmpeg: str, ffprobe: str, image: Path, narration: Path, output: Path, *,
     width: int, height: int, fps: int, duration: float, max_zoom: float,
@@ -125,8 +169,9 @@ def render_scene_clip(
         f"zoompan={zoom_expr}:x={x_expr}:y={y_expr}:d={frames}:s={width}x{height}:fps={fps},"
         "setsar=1"
     )
+    ffmpeg_image = _rasterize_svg_for_ffmpeg(image, width=width, height=height, logger=logger)
     run_command([
-        ffmpeg, "-y", "-loop", "1", "-i", image, "-i", narration,
+        ffmpeg, "-y", "-loop", "1", "-i", ffmpeg_image, "-i", narration,
         "-filter_complex", f"[0:v]{video_filter}[v]",
         "-map", "[v]", "-map", "1:a:0", "-t", f"{duration:.3f}", "-r", str(fps),
         "-c:v", "libx264", "-preset", "veryfast", "-crf", "23", "-pix_fmt", "yuv420p",
