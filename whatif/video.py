@@ -167,21 +167,26 @@ def render_scene_clip(
         f"scale={source_width}:{source_height}:force_original_aspect_ratio=increase,"
         f"crop={source_width}:{source_height},"
         f"zoompan={zoom_expr}:x={x_expr}:y={y_expr}:d=1:s={width}x{height}:fps={fps},"
-        "setsar=1"
+        f"fps=fps={fps},setsar=1,format=yuv420p"
     )
     ffmpeg_image = _rasterize_svg_for_ffmpeg(image, width=width, height=height, logger=logger)
     run_command([
         ffmpeg, "-y", "-loop", "1", "-framerate", str(fps), "-i", ffmpeg_image, "-i", narration,
         "-filter_complex", f"[0:v]{video_filter}[v]",
-        "-map", "[v]", "-map", "1:a:0", "-t", f"{duration:.3f}", "-r", str(fps),
-        "-c:v", "libx264", "-preset", "veryfast", "-crf", "18", "-pix_fmt", "yuv420p", "-fps_mode", "cfr",
-        "-c:a", "aac", "-ar", "48000", "-ac", "2", "-threads", str(threads), output
+        "-map", "[v]", "-map", "1:a:0", "-t", f"{duration:.3f}",
+        "-fps_mode", "cfr", "-r", str(fps),
+        "-c:v", "libx264", "-preset", "veryfast", "-crf", "18", "-profile:v", "main",
+        "-level", "4.0", "-bf", "0", "-g", str(fps * 2), "-pix_fmt", "yuv420p",
+        "-c:a", "aac", "-ar", "48000", "-ac", "2", "-threads", str(threads),
+        "-movflags", "+faststart", output
     ], logger=logger)
     _validate_streams(
         ffprobe, output, width=width, height=height, fps=fps,
         expected_duration=duration, logger=logger,
     )
-    sidecar.write_text(json.dumps({"cache_key": cache_key, "motion": motion}, indent=2), encoding="utf-8")
+    sidecar.write_text(json.dumps({
+        "cache_key": cache_key, "motion": motion, "renderer": "zoompan-continuous-v2"
+    }, indent=2), encoding="utf-8")
 
 
 def assemble_video(
@@ -229,8 +234,10 @@ def assemble_video(
         else:
             args += ["-map", "0:v:0", "-map", "0:a:0"]
         args += [
-            "-t", f"{duration:.3f}", "-c:v", "libx264", "-preset", "veryfast", "-crf", "18", "-fps_mode", "cfr",
-            "-pix_fmt", "yuv420p", "-c:a", "aac", "-ar", "48000", "-ac", "2",
+            "-t", f"{duration:.3f}", "-fps_mode", "cfr", "-r", str(fps),
+            "-c:v", "libx264", "-preset", "veryfast", "-crf", "18", "-profile:v", "main",
+            "-level", "4.0", "-bf", "0", "-g", str(fps * 2), "-pix_fmt", "yuv420p",
+            "-c:a", "aac", "-ar", "48000", "-ac", "2",
             "-movflags", "+faststart", "-threads", str(threads), output,
         ]
         run_command(args, logger=logger)

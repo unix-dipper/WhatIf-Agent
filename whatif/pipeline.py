@@ -40,6 +40,7 @@ def render_episode(episode: Episode, config, *, project_root: Path, force: bool,
             raise ValueError(f"Narration for {scene.id} has zero duration.")
         clip = clips_root / f"{scene.id}.mp4"
         scene_cache = {
+            "renderer": "zoompan-continuous-v2",
             "scene_id": scene.id,
             "image_sha256": sha256_file(scene.image),
             "narration_audio_sha256": sha256_file(audio),
