@@ -155,3 +155,8 @@ python -m compileall main.py whatif tests
 ```
 
 The unit tests cover JSON validation, path safety, missing images, configuration errors, subtitle formatting, and WAV duration. A real FFmpeg render and Piper integration test must be run on a machine where those external tools and a voice model are installed.
+
+
+### SVG rendering compatibility
+
+The renderer converts generated SVG illustrations to cached PNG files before passing them to FFmpeg. This avoids relying on an FFmpeg build with optional SVG decoding support. CairoSVG is installed automatically with `requirements.txt`.
