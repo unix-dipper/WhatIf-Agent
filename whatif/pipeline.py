@@ -44,6 +44,7 @@ def render_episode(episode: Episode, config, *, project_root: Path, force: bool,
             "image_sha256": sha256_file(scene.image),
             "narration_audio_sha256": sha256_file(audio),
             "narration_text": scene.narration,
+            "motion_engine": "cinematic-motion-v1",
             "motion": config.max_zoom,
             "video": {"width": width, "height": height, "fps": config.fps, "threads": config.threads},
         }
