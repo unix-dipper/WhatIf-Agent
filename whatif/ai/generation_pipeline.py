@@ -7,6 +7,8 @@ from pathlib import Path
 from typing import Any
 
 from ..errors import ValidationError
+from ..images.base import ImageRequest
+from ..images.providers import available_providers
 from ..utils import atomic_write_json, stable_hash
 from .ollama_client import OllamaClient, OllamaError
 from .prompts import SYSTEM, analysis_prompt, outline_prompt, scene_prompt
@@ -105,12 +107,21 @@ class StoryGenerationPipeline:
     def _export(self, episode_dir: Path, plan: dict[str, Any], analysis: dict[str, Any], outline: dict[str, Any]) -> None:
         images_dir = episode_dir / "images"
         images_dir.mkdir(exist_ok=True)
+        provider = available_providers(width=1920, height=1080)["svg"]
+        characters = plan.get("characters", [])
         phase1_scenes = []
         script_lines = [plan["title"], "", plan.get("description", "")]
         for index, scene in enumerate(plan["scenes"], 1):
             scene_id = scene["id"]
             image_name = f"{scene_id}.svg"
-            self._write_placeholder(images_dir / image_name, scene.get("title", scene_id), scene.get("mood", "atmospheric"))
+            request = ImageRequest(
+                scene_id=scene_id,
+                scene=scene,
+                characters=characters,
+                width=1920,
+                height=1080,
+            )
+            provider.generate_image(request, images_dir / image_name)
             phase1_scenes.append({
                 "id": scene_id,
                 "image": f"images/{image_name}",
@@ -135,7 +146,7 @@ class StoryGenerationPipeline:
                 "outline": outline,
                 "characters": plan.get("characters", []),
                 "planning_file": "planning.json",
-                "placeholders": True,
+                "placeholders": False,\n                "image_provider": "svg",
             },
         }
         atomic_write_json(episode_dir / "episode.json", episode)
